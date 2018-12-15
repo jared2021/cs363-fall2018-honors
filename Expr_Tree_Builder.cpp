@@ -128,10 +128,27 @@ void Expr_Tree_Builder::build_close_parenthesis(void)
 
 void Expr_Tree_Builder::check_precidence(Array <Binary_Expr_Node*> &nodes, int iterator)
 {
-	if(iterator>1&&nodes[iterator-2]->get_precidence()<nodes[iterator-1]->get_precidence()&&nodes[iterator-1]->get_parenthesis()!=true||iterator>1&&nodes[iterator-2]->get_parenthesis()<nodes[iterator-1]->get_parenthesis())
+	if(iterator>1&&nodes[iterator-2]->get_parenthesis()<nodes[iterator-1]->get_parenthesis())
 	{
 		int check=iterator-1;
-		while(check!=0&&nodes[check-1]->get_precidence()<nodes[check]->get_precidence()&&nodes[check-1]->get_parenthesis()!=true||check!=0&&nodes[check-1]->get_parenthesis()<nodes[check]->get_parenthesis())
+		while(check!=0&&nodes[check-1]->get_parenthesis()<nodes[check]->get_parenthesis())
+		{
+			temp=nodes[check-1];
+			nodes[check-1]=nodes[check];
+			nodes[check]=temp;
+			nodes[check-1]->set_left(nodes[check]->get_right());
+			nodes[check]->set_right(nodes[check]->get_left());
+			nodes[check]->set_left(nodes[check-1]);
+			Expr_Node* rotate=nodes[check]->get_left();
+			nodes[check]->set_left(nodes[check]->get_right());
+			nodes[check]->set_right(rotate);
+			check=check-1;
+		}
+	}
+	else if(iterator>1&&nodes[iterator-2]->get_precidence()<nodes[iterator-1]->get_precidence()&&nodes[iterator-1]->get_parenthesis()!=true)
+	{
+		int check=iterator-1;
+		while(check!=0&&nodes[check-1]->get_precidence()<nodes[check]->get_precidence()&&nodes[check-1]->get_parenthesis()!=true)
 		{
 			temp=nodes[check-1];
 			nodes[check-1]=nodes[check];
